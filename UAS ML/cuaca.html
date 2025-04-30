@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prakiraan Cuaca dan Voltase Panel Surya - IV Jurai</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      height: 100%;
+      font-family: Arial, sans-serif;
+      background-color: #f5faff;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background: #e6f0fa;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 2px solid #cfd9e6;
+      position: relative;
+    }
+    .logo {
+      position: absolute; top: 10px; left: 10px;
+      width: 50px;
+    }
+    .current-weather {
+      background: #dff0ff;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 2px solid #cfd9e6;
+    }
+    .forecast-container {
+      position: relative;
+      overflow: hidden;
+      flex: 1;
+      padding: 20px 0;
+    }
+    .track {
+      display: flex;
+      gap: 20px;
+      animation: scroll 60s linear infinite;
+    }
+    @keyframes scroll {
+      0%   { transform: translateX(0);   }
+      100% { transform: translateX(-50%);}
+    }
+    .forecast-card {
+      flex: 0 0 300px;
+      background: #fff;
+      border: 1px solid #cde3f4;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      text-align: left;
+      padding: 20px;
+    }
+    .forecast-card img {
+      display: block;
+      margin: 0 auto 10px;
+      width: 60px; height: 60px;
+    }
+    .forecast-card h3 {
+      font-size: 18px; color: #333; text-align: center; margin-bottom: 12px;
+    }
+    .forecast-card p {
+      font-size: 14px; color: #444; margin: 6px 0;
+    }
+    .forecast-card p span {
+      font-weight: bold;
+    }
+    footer {
+      background: #e6f0fa;
+      padding: 10px;
+      text-align: center;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="https://lh6.googleusercontent.com/proxy/La899XE8EmxgBR8rsQpUsEDqAwPT39QkgTG-TCiPOhdDDerrTpFoHpAQh8ZS_aSFg4yVeWjQLWv9ioxyFleiyNe-O8xEjGekwki7xYiTHVx58impQAGgijEtRS0BbNZ-_ArOmlp0F67zFhNlGg"
+         class="logo" alt="Logo UNP">
+    <h1>Prakiraan Cuaca dan Voltase Panel Surya</h1>
+    <p>Kecamatan IV Jurai, Sumatera Barat</p>
+  </header>
+
+  <section class="current-weather">
+    <h2>Data Cuaca & Voltase Panel Surya</h2>
+  </section>
+
+  <div class="forecast-container">
+    <div class="track" id="track">
+      <!-- Kartu akan diisi oleh JavaScript -->
+    </div>
+  </div>
+
+  <footer>
+    &copy; kelompok 1 uas Machine learning unp data by BMKG
+  </footer>
+
+  <script>
+    function parseCSV(text) {
+      const lines = text.trim().split('\n');
+      const headers = lines.shift().split(',');
+      return lines.map(line => {
+        const cols = line.split(',');
+        return headers.reduce((obj, h, i) => {
+          obj[h] = cols[i];
+          return obj;
+        }, {});
+      });
+    }
+
+    const track = document.getElementById('track');
+
+    fetch('hasil_prediksi_tegangan.csv')
+      .then(r => r.text())
+      .then(txt => {
+        const data = parseCSV(txt);
+        const cards = data.map(d => {
+          return `
+            <div class="forecast-card">
+              <img src="${d.image}" alt="">
+              <h3>${d.local_datetime}</h3>
+              <p><span>Suhu:</span> ${d.t}°C</p>
+              <p><span>Cuaca:</span> ${d.weather_desc}</p>
+              <p><span>Kelembapan:</span> ${d.hu}%</p>
+              <p><span>Kecep. Angin:</span> ${d.ws} km/jam ${d.wd}</p>
+              <p><span>Voltase:</span> ${parseFloat(d.voltage).toFixed(3)} V</p>
+            </div>
+          `;
+        }).join('');
+
+        track.innerHTML = cards + cards;
+      })
+      .catch(err => console.error('Gagal muat CSV:', err));
+  </script>
+</body>
+</html>
