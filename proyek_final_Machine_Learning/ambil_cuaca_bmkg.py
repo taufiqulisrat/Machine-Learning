@@ -4,7 +4,7 @@ import sys
 import os
 from datetime import datetime
 
-adm4_code = "13.01.05.2003"  # IV Jurai
+adm4_code = "13.01.05.2003"  # salido
 url = f"https://api.bmkg.go.id/publik/prakiraan-cuaca?adm4={adm4_code}"
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
